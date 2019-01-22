@@ -1,4 +1,4 @@
-# 设计理由
+### 设计理由
 GE有一个名为Memory Cloud（内存云）的分布式内存存储基础架构。这个memory cloud由一些memory trunks组成，集群中的每台机器都承载256个memory trunks。我们将一台机器的本地内存空间分为多个memory trunks的原因在于两点：
 
 （1）可以不需要任何锁的开销实现trunk层面的并行；
@@ -89,10 +89,10 @@ cell struct CellA
 
 除了直观的数据操纵接口之外，cell accessors也可以提供线程安全的数据操纵保证。GE被设计用于在多线程环境运行，其中大量cell之间以非常复杂的方式交互。为了使应用程序开发人员的生活更轻松，GE通过cell accessor提供了线程安全的cell操纵接口。
 
-## 使用
+### 使用
 在使用accessor的时候，必须应用一些使用规则。
 
-### 不能缓存Accessor
+#### 不能缓存Accessor
 Accessor就像一个数据“指针”工作，它不能被缓存给将来使用，因为accessor指向的内存块可能被其他accessor操作移动。例如，我们有一个`MyCell`定义如下：
 
 ```
@@ -139,7 +139,7 @@ ddd
 
 对于例子中的非缓存的accessor，accessor的值在被使用的时候才进行计算。对于例子中缓存的accessor，accessor通过`cell.list.Where(element => element.Length >= 3).ToList()`返回的列表实际上是指向同一个accessor的引用，并且这个accessor指向的是`cell.list`最后一个元素。
 
-### cell accessor和message accessor在使用后必须被dispose
+#### cell accessor和message accessor在使用后必须被dispose
 cell accessor是`disposible`对象，在使用后必须被dispose。在C#里面，disposable对象可以使用`using`构造体去清理：
 
 ``` C#
@@ -163,7 +163,7 @@ using (var request = new MyRequestWriter(...))
 }
 ```
 
-### cell accessor不能以嵌套方式使用
+#### cell accessor不能以嵌套方式使用
 每个cell accessor都有关联的自旋锁（spin-lock）。嵌套使用cell accessor可能导致死锁。下面的代码片段里显示的cell accessor被不正确使用了:
 
 ``` C#
